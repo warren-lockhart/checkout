@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CheckoutRepositories
 {
-    public static class ItemsDataStore
+    public class ItemsDataStore : IDataStore
     {
         public static IEnumerable<Item> Items = new List<Item>()
         {
@@ -13,5 +13,10 @@ namespace CheckoutRepositories
             new Item { Name = "orange", Price = 0.4, Offer = new Offer { Quantity = 3, Price = 0.9 }},
             new Item { Name = "curly wurly", Price = 0.7 }
         };
+
+        public bool ItemCheck(string name)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
