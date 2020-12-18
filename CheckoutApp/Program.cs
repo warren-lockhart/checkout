@@ -10,9 +10,10 @@ namespace CheckoutApp
         static void Main(string[] args)
         {
             var serviceProvider = new ServiceCollection()
-            .AddSingleton<IScanService, ScanService>()
-            .AddSingleton<IDataStore, ItemsDataStore>()
-            .BuildServiceProvider();
+                .AddSingleton<IScanService, ScanService>()
+                .AddSingleton<IDataStore, ItemsDataStore>()
+                .AddSingleton<IShoppingList, ShoppingList>()
+                .BuildServiceProvider();
 
             var scanService = serviceProvider.GetService<IScanService>();
 

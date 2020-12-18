@@ -1,5 +1,4 @@
 ﻿using CheckoutRepositories;
-using CheckoutServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +8,12 @@ namespace CheckoutServices
     public class ScanService : IScanService
     {
         private readonly IDataStore _itemDataStore;
-        private ICollection<ScannedItem> _items;
+        private readonly IShoppingList _shoppingList;
 
-        public ScanService(IDataStore itemDataStore)
+        public ScanService(IDataStore itemDataStore, IShoppingList shoppingList)
         {
             _itemDataStore = itemDataStore;
-            _items = new List<ScannedItem>();
+            _shoppingList = shoppingList;
         }
 
         public void Scan(string scannedItem)
@@ -26,22 +25,14 @@ namespace CheckoutServices
                 throw new Exception("Item is not in the store, please try another");
             }
 
-            if (!_items.Any(i => i.Name == itemName))
-            {
-                _items.Add(new ScannedItem { Name = itemName, Quantity = 1 });
-            }
-            else
-            {
-                var existingItem = _items.First(i => i.Name == itemName);
-                existingItem.Quantity++;
-            }
+            _shoppingList.AddOrIncrement(itemName);
         }
 
         public double Total()
         {
             var total = 0.0;
 
-            foreach (var item in _items)
+            foreach (var item in _shoppingList.GetList())
             {
                 var storeItem = _itemDataStore.Get(item.Name);
 
