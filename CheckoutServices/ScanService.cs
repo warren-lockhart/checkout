@@ -28,15 +28,15 @@ namespace CheckoutServices
             _shoppingList.AddOrIncrement(itemName);
         }
 
-        public double Total()
+        public decimal Total()
         {
-            var total = 0.0;
+            decimal total = 0.0M;
 
             foreach (var item in _shoppingList.GetList())
             {
                 var storeItem = _itemDataStore.Get(item.Name);
 
-                var itemSum = 0.0;
+                decimal itemSum = 0.0M;
 
                 if (storeItem?.Offer != null)
                 {

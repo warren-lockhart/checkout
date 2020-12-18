@@ -4,6 +4,6 @@
     {
         void Scan(string item);
 
-        double Total();
+        decimal Total();
     }
 }

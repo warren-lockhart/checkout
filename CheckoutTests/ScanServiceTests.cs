@@ -36,17 +36,17 @@ namespace CheckoutTests
             {
                 if (item == "orange")
                 {
-                    return new Item { Name = "orange", Price = 0.4, Offer = new Offer { Quantity = 3, Price = 0.9 } };
+                    return new Item { Name = "orange", Price = 0.4M, Offer = new Offer { Quantity = 3, Price = 0.9M } };
                 }
 
                 if (item == "apple")
                 {
-                    return new Item { Name = "apple", Price = 0.6 };
+                    return new Item { Name = "apple", Price = 0.6M };
                 }
 
                 if (item == "freddo")
                 {
-                    return new Item { Name = "freddo", Price = 0.5, Offer = new Offer { Quantity = 2, Price = 0.8 } };
+                    return new Item { Name = "freddo", Price = 0.5M, Offer = new Offer { Quantity = 2, Price = 0.8M } };
                 }
 
                 return new Item();
@@ -70,16 +70,18 @@ namespace CheckoutTests
         }
 
 
-        [Fact]
-        public void Total_SingleItemNoOffer_ExpectedValue()
+        [Theory]
+        [InlineData("apple", 0.6)]
+        [InlineData("orange", 0.4)]
+        [InlineData("freddo", 0.5)]
+        public void Total_SingleItemNoOffer_ExpectedValue(string item, decimal expected)
         {
             // Act
-            _scanService.Scan("apple");
+            _scanService.Scan(item);
             var total = _scanService.Total();
 
             // Assert
-            Assert.Equal(0.6, total);
-
+            Assert.Equal(expected, total);
         }
 
         [Fact]
@@ -93,8 +95,7 @@ namespace CheckoutTests
             var total = _scanService.Total();
 
             // Assert
-            Assert.Equal(1.3, total);
-
+            Assert.Equal(1.3M, total);
         }
 
         [Fact]
@@ -109,8 +110,22 @@ namespace CheckoutTests
             var total = _scanService.Total();
 
             // Assert
-            Assert.Equal(1.8, total);
+            Assert.Equal(1.8M, total);
+        }
 
+        [Fact]
+        public void Total_MixedItems_OrderIrrelevant()
+        {
+            // Act
+            _scanService.Scan("apple");
+            _scanService.Scan("orange");
+            _scanService.Scan("freddo");
+            _scanService.Scan("freddo");
+
+            var total = _scanService.Total();
+
+            // Assert
+            Assert.Equal(1.8M, total);
         }
     }
 }
