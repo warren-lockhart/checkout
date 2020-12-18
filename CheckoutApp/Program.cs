@@ -2,7 +2,6 @@
 using CheckoutServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 
 namespace CheckoutApp
 {
@@ -19,20 +18,34 @@ namespace CheckoutApp
 
             Console.WriteLine("Welcome to Checkout!");
             Console.WriteLine("Scan Your Items");
-            Console.WriteLine("Type 'done' to sum goods");
+            Console.WriteLine("Type 'sum' to sum goods");
 
-            string name;
-            var items = new List<string>();
+            string item;
 
-            do
+            for(; ;)
             {
                 Console.WriteLine("Item name:");
 
-                name = Console.ReadLine();
-                // TODO: Process error/exception if the item is not registered (Scan(string))
-                items.Add(name);
+                item = Console.ReadLine();
 
-            } while (name.ToLower() != "done");
+                if (item.ToLower() == "sum")
+                {
+                    break;
+                }
+
+                try
+                {
+                    scanService.Scan(item);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    continue;
+                }
+            }
+
+            var total = scanService.Total();
+            Console.WriteLine($"The total is {total}");
         }
     }
 }

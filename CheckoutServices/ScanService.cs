@@ -1,13 +1,15 @@
 ﻿using CheckoutRepositories;
 using CheckoutServices.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CheckoutServices
 {
     public class ScanService : IScanService
     {
         private readonly IDataStore _itemDataStore;
-        private IEnumerable<ScannedItem> _items;
+        private ICollection<ScannedItem> _items;
 
         public ScanService(IDataStore itemDataStore)
         {
@@ -15,28 +17,52 @@ namespace CheckoutServices
             _items = new List<ScannedItem>();
         }
 
-        public void Scan(string item)
+        public void Scan(string scannedItem)
         {
-            throw new System.NotImplementedException();
+            var itemName = scannedItem.ToLower();
 
-            // 1. Data Store Check.
+            if (!_itemDataStore.ItemCheck(itemName))
+            {
+                throw new Exception("Item is not in the store, please try another");
+            }
 
-            // 2. If not present, add ScannedItem
-
-            // 3. If present, increment.
+            if (!_items.Any(i => i.Name == itemName))
+            {
+                _items.Add(new ScannedItem { Name = itemName, Quantity = 1 });
+            }
+            else
+            {
+                var existingItem = _items.First(i => i.Name == itemName);
+                existingItem.Quantity++;
+            }
         }
 
         public double Total()
         {
-            throw new System.NotImplementedException();
+            var total = 0.0;
 
-            // Loop through scanned items collection
+            foreach (var item in _items)
+            {
+                var storeItem = _itemDataStore.Get(item.Name);
 
-            // 1. Get data store item
+                var itemSum = 0.0;
 
-            // 2. If there is an offer, get multiples of offer quantity and remainder
+                if (storeItem?.Offer != null)
+                {
+                    var multiples = item.Quantity / storeItem.Offer.Quantity;
+                    var remainder = item.Quantity % storeItem.Offer.Quantity;
 
-            // 3. Get item sum accordingly and add to running total
+                    itemSum = multiples * storeItem.Offer.Price + remainder * storeItem.Price;
+                }
+                else
+                {
+                    itemSum = item.Quantity * storeItem.Price;
+                }
+
+                total += itemSum;
+            }
+
+            return total;
         }
     }
 }

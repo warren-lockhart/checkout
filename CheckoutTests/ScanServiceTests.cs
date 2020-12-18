@@ -1,10 +1,9 @@
-using System;
 using Xunit;
 
 namespace CoreTests
 {
-    public class UnitTest1
-    {
+    public class ScanServiceTests
+    { 
         [Fact]
         public void Test1()
         {
